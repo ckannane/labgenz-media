@@ -21,6 +21,7 @@ import {
 interface SidebarProps {
   activeItem: string;
   onItemClick: (item: string) => void;
+  isMobile?: boolean;
 }
 
 interface MenuItem {
@@ -30,7 +31,7 @@ interface MenuItem {
   description?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick, isMobile = false }) => {
   const [createExpanded, setCreateExpanded] = useState(false);
 
   const mainItems: MenuItem[] = [
@@ -80,8 +81,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
   };
 
   return (
-    <div className="sidebar w-64 h-screen fixed left-0 top-0 z-50 p-4">
-      <div className="h-full flex flex-col">
+    <div className={`sidebar ${isMobile ? 'relative w-full h-auto' : 'desktop-sidebar w-64 h-screen fixed left-0 top-0 z-50'} p-4`}>
+      <div className={`${isMobile ? 'flex flex-col' : 'h-full flex flex-col'}`}>
         {/* Logo */}
         <div className="mb-6 flex-shrink-0">
           <h1 className="text-2xl font-bold gradient-text">LABGENZ</h1>
@@ -89,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden min-h-0" style={{ gap: '3px', display: 'flex', flexDirection: 'column' }}>
+        <nav className={`${isMobile ? 'space-y-1' : 'flex-1 overflow-y-auto overflow-x-hidden min-h-0'}`} style={isMobile ? {} : { gap: '3px', display: 'flex', flexDirection: 'column' }}>
           {mainItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeItem === item.id || 

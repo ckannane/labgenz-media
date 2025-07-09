@@ -27,6 +27,8 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
   const [selectedDemoStrategy, setSelectedDemoStrategy] = useState('');
   const [selectedContentType, setSelectedContentType] = useState('');
   const [viralElements, setViralElements] = useState<string[]>([]);
+  const [hookSection, setHookSection] = useState('strategy'); // For AI Hook + Demo sections
+  const [selectedTrendingBackground, setSelectedTrendingBackground] = useState('galaxy-vibe'); // For greenscreen memes trending backgrounds
 
   const getVideoTypeTitle = (type: string) => {
     switch (type) {
@@ -194,16 +196,48 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
   ];
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">{getVideoTypeTitle(videoType)}</h1>
-        <p className="text-gray-400">Create engaging content with our AI-powered tools</p>
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{getVideoTypeTitle(videoType)}</h1>
+        <p className="text-gray-400 text-sm sm:text-base">Create engaging content with our AI-powered tools</p>
       </div>
 
       {/* Stepper */}
-      <div className="glass-card p-6 mb-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="glass-card p-4 sm:p-6 mb-6 sm:mb-8">
+        {/* Mobile Stepper - Horizontal Scroll */}
+        <div className="block md:hidden mb-4">
+          <div className="flex items-center space-x-2 overflow-x-auto pb-2">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center flex-shrink-0">
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 flex-shrink-0
+                  ${activeStep === step.number 
+                    ? 'bg-gradient-to-r from-cyan-400 to-purple-400 text-gray-900 shadow-lg shadow-cyan-400/30' 
+                    : activeStep > step.number 
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-700 text-gray-400'
+                  }
+                `}>
+                  {activeStep > step.number ? <Check className="w-3 h-3" /> : step.icon}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`
+                    w-8 h-1 mx-1 rounded transition-all duration-300 flex-shrink-0
+                    ${activeStep > step.number ? 'bg-green-500' : 'bg-gray-700'}
+                  `} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-medium text-cyan-400">{steps[activeStep - 1]?.name}</p>
+            <p className="text-xs text-gray-500">Step {activeStep} of {steps.length}</p>
+          </div>
+        </div>
+
+        {/* Desktop Stepper */}
+        <div className="hidden md:flex justify-between items-center mb-6">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
               <div className={`
@@ -218,7 +252,7 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
                 {activeStep > step.number ? <Check className="w-5 h-5" /> : step.icon}
               </div>
               
-              <div className="ml-3 hidden md:block">
+              <div className="ml-3">
                 <p className={`text-sm font-medium ${activeStep === step.number ? 'text-cyan-400' : 'text-white'}`}>
                   {step.name}
                 </p>
@@ -237,8 +271,8 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
       </div>
 
       {/* Step Content */}
-      <div className="glass-card p-8 mb-8">
-        <div className="min-h-[500px]">
+      <div className="glass-card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+        <div className="min-h-[400px] sm:min-h-[500px]">
           {/* Step 1: Script, Template, or Hook Strategy */}
           {activeStep === 1 && (
             <div className="space-y-6">
@@ -259,40 +293,42 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
               {videoType === 'greenscreen-memes' ? (
                 // Greenscreen Memes: Template vs Custom Video Choice
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6 sm:mb-8 justify-center">
                     {/* Template Option */}
-                    <div className="glass-card p-6 border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
-                      <div className="text-center mb-4">
-                        <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <span className="text-2xl">🎭</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Use Viral Templates</h3>
-                        <p className="text-gray-300 text-sm">Choose from trending meme formats with proven viral potential</p>
+                    <button
+                      onClick={() => setSelectedContentType('template')}
+                      className={`flex items-center gap-4 px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
+                        selectedContentType === 'template'
+                          ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
+                          : 'border-gray-600 bg-gray-800/50 hover:border-cyan-400/50 hover:bg-cyan-400/5'
+                      }`}
+                    >
+                      <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span className="text-xl">🎭</span>
                       </div>
-                      <button 
-                        onClick={() => setSelectedContentType('template')}
-                        className={`w-full btn-secondary ${selectedContentType === 'template' ? 'highlighted' : ''}`}
-                      >
-                        Browse Templates
-                      </button>
-                    </div>
+                      <div className="text-left">
+                        <h3 className="text-lg font-bold text-white mb-1">Use Viral Templates</h3>
+                        <p className="text-gray-400 text-sm">Trending meme formats</p>
+                      </div>
+                    </button>
 
                     {/* Custom Video Option */}
-                    <div className="glass-card p-6 border-2 border-green-500/30 bg-gradient-to-br from-green-500/10 to-cyan-500/10">
-                      <div className="text-center mb-4">
-                        <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <span className="text-2xl">🎥</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Upload Your Video</h3>
-                        <p className="text-gray-300 text-sm">Use your own footage and add greenscreen effects</p>
+                    <button
+                      onClick={() => setSelectedContentType('custom')}
+                      className={`flex items-center gap-4 px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
+                        selectedContentType === 'custom'
+                          ? 'border-green-400 bg-green-400/10 shadow-lg shadow-green-400/20'
+                          : 'border-gray-600 bg-gray-800/50 hover:border-green-400/50 hover:bg-green-400/5'
+                      }`}
+                    >
+                      <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-cyan-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span className="text-xl">🎥</span>
                       </div>
-                      <button 
-                        onClick={() => setSelectedContentType('custom')}
-                        className={`w-full btn-secondary ${selectedContentType === 'custom' ? 'highlighted' : ''}`}
-                      >
-                        Upload Video
-                      </button>
-                    </div>
+                      <div className="text-left">
+                        <h3 className="text-lg font-bold text-white mb-1">Upload Your Video</h3>
+                        <p className="text-gray-400 text-sm">Use your own footage</p>
+                      </div>
+                    </button>
                   </div>
 
                   {/* Template Selection (if template option chosen) */}
@@ -346,80 +382,239 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
               ) : videoType === 'ai-hook-demo' ? (
                 // AI Hook + Demo: Complete Hook Elements
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     {/* Hook Strategy */}
-                    <div className="glass-card p-6 text-center">
+                    <button
+                      onClick={() => setHookSection('strategy')}
+                      className={`glass-card p-6 text-center cursor-pointer transition-all duration-300 ${
+                        hookSection === 'strategy' 
+                          ? 'border-red-500/50 bg-red-500/10 shadow-lg shadow-red-500/20' 
+                          : 'hover:border-red-500/30'
+                      }`}
+                    >
                       <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                         <span className="text-red-400 text-xl">🎯</span>
                       </div>
                       <h3 className="text-white font-semibold mb-2">Hook Strategy</h3>
                       <p className="text-gray-400 text-sm">Proven frameworks that grab attention</p>
-                    </div>
+                    </button>
 
                     {/* Script Templates */}
-                    <div className="glass-card p-6 text-center">
+                    <button
+                      onClick={() => setHookSection('templates')}
+                      className={`glass-card p-6 text-center cursor-pointer transition-all duration-300 ${
+                        hookSection === 'templates' 
+                          ? 'border-purple-500/50 bg-purple-500/10 shadow-lg shadow-purple-500/20' 
+                          : 'hover:border-purple-500/30'
+                      }`}
+                    >
                       <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                         <span className="text-purple-400 text-xl">📝</span>
                       </div>
                       <h3 className="text-white font-semibold mb-2">Script Templates</h3>
                       <p className="text-gray-400 text-sm">High-converting script structures</p>
-                    </div>
+                    </button>
 
                     {/* Visual Elements */}
-                    <div className="glass-card p-6 text-center">
+                    <button
+                      onClick={() => setHookSection('visuals')}
+                      className={`glass-card p-6 text-center cursor-pointer transition-all duration-300 ${
+                        hookSection === 'visuals' 
+                          ? 'border-cyan-500/50 bg-cyan-500/10 shadow-lg shadow-cyan-500/20' 
+                          : 'hover:border-cyan-500/30'
+                      }`}
+                    >
                       <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                         <span className="text-cyan-400 text-xl">🎨</span>
                       </div>
                       <h3 className="text-white font-semibold mb-2">Visual Elements</h3>
                       <p className="text-gray-400 text-sm">Graphics, transitions, and effects</p>
-                    </div>
+                    </button>
                   </div>
 
-                  {/* Hook Strategy Selection */}
-                  <div className="mb-8">
-                    <h3 className="text-white font-semibold mb-4">🎯 Choose Your Hook Strategy</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {getTemplates(videoType).map((strategy) => (
-                        <div
-                          key={strategy.id}
-                          onClick={() => setSelectedTemplate(strategy.id)}
-                          className={`
-                            service-card cursor-pointer
-                            ${selectedTemplate === strategy.id ? 'highlighted' : ''}
-                          `}
-                        >
-                          <h4 className="text-white font-semibold mb-2">{strategy.name}</h4>
-                          <p className="text-gray-400 text-sm mb-3">{strategy.description}</p>
-                        </div>
-                      ))}
+                  {/* Dynamic Content Based on Selected Section */}
+                  {hookSection === 'strategy' && (
+                    <div className="mb-8">
+                      <h3 className="text-white font-semibold mb-4">🎯 Choose Your Hook Strategy</h3>
+                      <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                        {getTemplates(videoType).map((strategy) => (
+                          <div
+                            key={strategy.id}
+                            onClick={() => setSelectedTemplate(strategy.id)}
+                            className={`
+                              service-card cursor-pointer transition-all duration-300
+                              ${selectedTemplate === strategy.id ? 'highlighted' : ''}
+                            `}
+                          >
+                            <h4 className="text-white font-semibold mb-2">{strategy.name}</h4>
+                            <p className="text-gray-400 text-sm mb-3">{strategy.description}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {hookSection === 'templates' && (
+                    <div className="mb-8">
+                      <h3 className="text-white font-semibold mb-4">📝 Script Templates & Frameworks</h3>
+                      <div className="space-y-4">
+                        {[
+                          {
+                            id: 'problem-agitate-solve',
+                            title: 'Problem → Agitate → Solve (PAS)',
+                            description: 'Identify pain point, amplify urgency, reveal solution',
+                            example: '"Tired of X? Here\'s what makes it worse... But here\'s the fix"'
+                          },
+                          {
+                            id: 'aida-framework',
+                            title: 'AIDA Framework',
+                            description: 'Attention → Interest → Desire → Action',
+                            example: '"STOP! This changes everything... Here\'s why you need this NOW"'
+                          },
+                          {
+                            id: 'before-after-bridge',
+                            title: 'Before → After → Bridge',
+                            description: 'Current state, desired outcome, how to get there',
+                            example: '"From broke to 6-figures... Here\'s the exact system I used"'
+                          },
+                          {
+                            id: 'curiosity-gap',
+                            title: 'The Curiosity Gap',
+                            description: 'Create information gap that demands to be filled',
+                            example: '"This weird trick billionaires use... (You won\'t believe #3)"'
+                          }
+                        ].map((template) => (
+                          <div
+                            key={template.id}
+                            onClick={() => setSelectedTemplate(template.id)}
+                            className={`
+                              p-4 rounded-lg border transition-all duration-300 cursor-pointer
+                              ${selectedTemplate === template.id 
+                                ? 'border-purple-500/50 bg-purple-500/10' 
+                                : 'border-gray-700/50 bg-gray-900/50 hover:border-purple-500/30'
+                              }
+                            `}
+                          >
+                            <h4 className="text-white font-semibold mb-2">{template.title}</h4>
+                            <p className="text-gray-400 text-sm mb-2">{template.description}</p>
+                            <p className="text-cyan-400 text-sm italic">"{template.example}"</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {hookSection === 'visuals' && (
+                    <div className="mb-8">
+                      <h3 className="text-white font-semibold mb-4">🎨 Visual Elements & Effects</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Text Animations */}
+                        <div className="space-y-4">
+                          <h4 className="text-cyan-400 font-medium">Text Animations</h4>
+                          {[
+                            { name: 'Typewriter Effect', desc: 'Text appears letter by letter' },
+                            { name: 'Zoom & Fade', desc: 'Text zooms in with fade effect' },
+                            { name: 'Glitch Text', desc: 'Viral glitch animation style' },
+                            { name: 'Neon Glow', desc: 'Glowing neon text effects' }
+                          ].map((effect, index) => (
+                            <div 
+                              key={effect.name}
+                              className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 cursor-pointer hover:border-cyan-500/30 transition-colors"
+                            >
+                              <h5 className="text-white font-medium text-sm">{effect.name}</h5>
+                              <p className="text-gray-400 text-xs">{effect.desc}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Transition Effects */}
+                        <div className="space-y-4">
+                          <h4 className="text-cyan-400 font-medium">Transition Effects</h4>
+                          {[
+                            { name: 'Quick Cuts', desc: 'Fast-paced scene changes' },
+                            { name: 'Zoom Transitions', desc: 'Dynamic zoom in/out effects' },
+                            { name: 'Slide Reveals', desc: 'Content slides from edges' },
+                            { name: 'Flash Effects', desc: 'Attention-grabbing flashes' }
+                          ].map((effect, index) => (
+                            <div 
+                              key={effect.name}
+                              className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 cursor-pointer hover:border-cyan-500/30 transition-colors"
+                            >
+                              <h5 className="text-white font-medium text-sm">{effect.name}</h5>
+                              <p className="text-gray-400 text-xs">{effect.desc}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Color Schemes */}
+                      <div className="mt-6">
+                        <h4 className="text-cyan-400 font-medium mb-3">Hook Color Schemes</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          {[
+                            { name: 'Urgency Red', colors: 'from-red-600 to-orange-500' },
+                            { name: 'Trust Blue', colors: 'from-blue-600 to-cyan-500' },
+                            { name: 'Success Green', colors: 'from-green-600 to-emerald-500' },
+                            { name: 'Premium Gold', colors: 'from-yellow-600 to-amber-500' }
+                          ].map((scheme) => (
+                            <div key={scheme.name} className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 cursor-pointer hover:border-cyan-500/30 transition-colors">
+                              <div className={`w-full h-8 bg-gradient-to-r ${scheme.colors} rounded mb-2`}></div>
+                              <p className="text-white text-sm font-medium">{scheme.name}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Complete Hook Elements Kit */}
                   {selectedTemplate && (
                     <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 rounded-lg p-6 border border-purple-500/20">
                       <h3 className="text-white font-semibold mb-4">🚀 Your Complete Hook Kit</h3>
+                      <p className="text-gray-400 text-sm mb-6">Click any component to customize your hook elements</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                        <button 
+                          onClick={() => setHookSection('templates')}
+                          className="bg-gray-800/50 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700/50 hover:border-purple-500/30 border border-transparent transition-all duration-300"
+                        >
                           <div className="text-2xl mb-2">📋</div>
                           <h4 className="text-white font-medium text-sm">Script Framework</h4>
                           <p className="text-gray-400 text-xs">Ready-to-use templates</p>
-                        </div>
-                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="mt-2 text-purple-400 text-xs">→ Customize</div>
+                        </button>
+                        <button 
+                          onClick={() => setHookSection('visuals')}
+                          className="bg-gray-800/50 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700/50 hover:border-cyan-500/30 border border-transparent transition-all duration-300"
+                        >
                           <div className="text-2xl mb-2">🎬</div>
                           <h4 className="text-white font-medium text-sm">Visual Templates</h4>
                           <p className="text-gray-400 text-xs">Eye-catching graphics</p>
-                        </div>
-                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="mt-2 text-cyan-400 text-xs">→ Customize</div>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            // Add hook music selection functionality
+                            alert('Hook Music Selector - Coming in Step 3: Voice & Audio!');
+                          }}
+                          className="bg-gray-800/50 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700/50 hover:border-green-500/30 border border-transparent transition-all duration-300"
+                        >
                           <div className="text-2xl mb-2">🎵</div>
                           <h4 className="text-white font-medium text-sm">Hook Music</h4>
                           <p className="text-gray-400 text-xs">Attention-grabbing audio</p>
-                        </div>
-                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="mt-2 text-green-400 text-xs">→ Preview</div>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            // Add analytics preview functionality
+                            alert('Analytics Dashboard - Available after video creation!');
+                          }}
+                          className="bg-gray-800/50 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700/50 hover:border-yellow-500/30 border border-transparent transition-all duration-300"
+                        >
                           <div className="text-2xl mb-2">📊</div>
                           <h4 className="text-white font-medium text-sm">Analytics Setup</h4>
                           <p className="text-gray-400 text-xs">Performance tracking</p>
-                        </div>
+                          <div className="mt-2 text-yellow-400 text-xs">→ Preview</div>
+                        </button>
                       </div>
                     </div>
                   )}
@@ -491,19 +686,31 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
                   <div className="mb-8">
                     <h3 className="text-white font-semibold mb-4">🔥 Trending Backgrounds</h3>
                     <div className="services-grid">
-                      <div className="service-card cursor-pointer highlighted">
+                      <div 
+                        className={`service-card cursor-pointer ${selectedTrendingBackground === 'galaxy-vibe' ? 'highlighted' : ''}`}
+                        onClick={() => setSelectedTrendingBackground('galaxy-vibe')}
+                      >
                         <h3 className="text-white font-semibold mb-1">🌌 Galaxy Vibe</h3>
                         <p className="text-gray-400 text-sm">Cosmic space aesthetic • Viral on TikTok</p>
                       </div>
-                      <div className="service-card cursor-pointer">
+                      <div 
+                        className={`service-card cursor-pointer ${selectedTrendingBackground === 'liminal-spaces' ? 'highlighted' : ''}`}
+                        onClick={() => setSelectedTrendingBackground('liminal-spaces')}
+                      >
                         <h3 className="text-white font-semibold mb-1">🏢 Liminal Spaces</h3>
                         <p className="text-gray-400 text-sm">Eerie empty places • Horror aesthetic</p>
                       </div>
-                      <div className="service-card cursor-pointer">
+                      <div 
+                        className={`service-card cursor-pointer ${selectedTrendingBackground === 'ps2-graphics' ? 'highlighted' : ''}`}
+                        onClick={() => setSelectedTrendingBackground('ps2-graphics')}
+                      >
                         <h3 className="text-white font-semibold mb-1">🎮 PS2 Graphics</h3>
                         <p className="text-gray-400 text-sm">Retro gaming nostalgia • Gen Z favorite</p>
                       </div>
-                      <div className="service-card cursor-pointer">
+                      <div 
+                        className={`service-card cursor-pointer ${selectedTrendingBackground === 'aesthetic-waves' ? 'highlighted' : ''}`}
+                        onClick={() => setSelectedTrendingBackground('aesthetic-waves')}
+                      >
                         <h3 className="text-white font-semibold mb-1">🌊 Aesthetic Waves</h3>
                         <p className="text-gray-400 text-sm">Vaporwave vibes • Chill content</p>
                       </div>
@@ -972,27 +1179,27 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-700">
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-700 gap-4 sm:gap-0">
           <button
             onClick={handlePrevious}
             disabled={activeStep === 1}
-            className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto order-2 sm:order-1"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             Previous
           </button>
           
-          <div className="text-gray-400">
+          <div className="text-gray-400 text-sm sm:text-base order-1 sm:order-2">
             Step {activeStep} of {steps.length}
           </div>
           
           <button
             onClick={handleNext}
             disabled={activeStep === steps.length}
-            className="btn-secondary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-secondary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto order-3"
           >
             {activeStep === steps.length ? 'Complete' : 'Next'}
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>

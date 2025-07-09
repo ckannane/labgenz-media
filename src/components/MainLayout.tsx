@@ -3,14 +3,19 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import CreateVideo from './CreateVideo';
-import { User, Video, BarChart3, Calendar, Star, HelpCircle, Mail, Zap, Sparkles } from 'lucide-react';
+import SubscriptionModal from './SubscriptionModal';
+import { User, Video, BarChart3, Calendar, Star, HelpCircle, Mail, Zap, Sparkles, Menu, X } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
   const [activeItem, setActiveItem] = useState('profile');
   const [activeStep, setActiveStep] = useState(1);
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const handleItemClick = (item: string) => {
     setActiveItem(item);
+    // Close mobile sidebar when item is clicked
+    setIsMobileSidebarOpen(false);
     // Reset to step 1 when switching between video creation modes
     if (['create', 'ai-slideshow', 'ai-hook-demo', 'greenscreen-memes'].includes(item)) {
       setActiveStep(1);
@@ -26,7 +31,7 @@ const MainLayout: React.FC = () => {
         return <CreateVideo activeStep={activeStep} onStepChange={setActiveStep} videoType={activeItem} />;
       
       case 'profile':
-        return <ProfilePage />;
+        return <ProfilePage onManageSubscription={() => setIsSubscriptionModalOpen(true)} />;
       
       case 'videos':
       case 'my-videos':
@@ -57,18 +62,74 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <Sidebar activeItem={activeItem} onItemClick={handleItemClick} />
-      <main className="ml-64 hero-bg">
-        <div className="min-h-screen p-4">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="text-white hover:text-cyan-400 transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h1 className="text-xl font-bold gradient-text">LabGenz Media</h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        >
+          <div 
+            className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-gray-900/95 backdrop-blur-xl border-r border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">Menu</h2>
+              <button
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="overflow-y-auto h-full pb-20">
+              <Sidebar activeItem={activeItem} onItemClick={handleItemClick} isMobile={true} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <Sidebar activeItem={activeItem} onItemClick={handleItemClick} isMobile={false} />
+      </div>
+
+      {/* Main Content */}
+      <main className="lg:ml-64 hero-bg min-h-screen">
+        <div className="pt-20 lg:pt-0 p-4 lg:p-6">
           {renderContent()}
         </div>
       </main>
+      
+      <SubscriptionModal
+        isOpen={isSubscriptionModalOpen}
+        onClose={() => setIsSubscriptionModalOpen(false)}
+        currentPlan="pro"
+      />
     </div>
   );
 };
 
 // Placeholder components for other pages
-const ProfilePage = () => (
+interface ProfilePageProps {
+  onManageSubscription: () => void;
+}
+
+const ProfilePage: React.FC<ProfilePageProps> = ({ onManageSubscription }) => (
   <div className="max-w-4xl mx-auto p-6">
     <div className="mb-8">
       <p className="section-subtitle">USER PROFILE</p>
@@ -189,7 +250,10 @@ const ProfilePage = () => (
                 <span className="text-cyan-400 font-medium">Active</span>
               </div>
             </div>
-            <button className="btn-primary w-full mt-4">
+            <button 
+              className="btn-primary w-full mt-4"
+              onClick={onManageSubscription}
+            >
               Manage Subscription
             </button>
           </div>
