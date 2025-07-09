@@ -6,12 +6,13 @@ import CreateVideo from './CreateVideo';
 import { User, Video, BarChart3, Calendar, Star, HelpCircle, Mail, Zap, Sparkles } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
-  const [activeItem, setActiveItem] = useState('create');
+  const [activeItem, setActiveItem] = useState('profile');
   const [activeStep, setActiveStep] = useState(1);
 
   const handleItemClick = (item: string) => {
     setActiveItem(item);
-    if (item === 'create') {
+    // Reset to step 1 when switching between video creation modes
+    if (['create', 'ai-slideshow', 'ai-hook-demo', 'greenscreen-memes'].includes(item)) {
       setActiveStep(1);
     }
   };

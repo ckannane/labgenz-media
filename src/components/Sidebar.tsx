@@ -23,12 +23,19 @@ interface SidebarProps {
   onItemClick: (item: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
-  const [createExpanded, setCreateExpanded] = useState(true);
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  description?: string;
+}
 
-  const mainItems = [
-    { id: 'create', label: 'Create', icon: Monitor },
+const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
+  const [createExpanded, setCreateExpanded] = useState(false);
+
+  const mainItems: MenuItem[] = [
     { id: 'profile', label: 'Profile', icon: User },
+    { id: 'create', label: 'Create', icon: Monitor },
     { id: 'videos', label: 'Content', icon: Video },
     { id: 'schedule', label: 'Schedule', icon: Calendar },
     { id: 'automations', label: 'Automations', icon: Zap },
@@ -38,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
     { id: 'contact', label: 'Contact', icon: Mail },
   ];
 
-  const createSubItems = [
+  const createSubItems: MenuItem[] = [
     { 
       id: 'ai-slideshow', 
       label: 'AI Slideshow', 
@@ -61,9 +68,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
 
   const handleItemClick = (itemId: string) => {
     if (itemId === 'create') {
+      // Toggle the expanded state when Create is clicked
       setCreateExpanded(!createExpanded);
+      // If expanding for the first time, also set active item to ai-slideshow
+      if (!createExpanded) {
+        onItemClick('ai-slideshow');
+      }
+    } else {
+      onItemClick(itemId);
     }
-    onItemClick(itemId);
   };
 
   return (
@@ -104,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem, onItemClick }) => {
                   )}
                 </button>
 
-                {/* Create Submenu */}
+                {/* Create Submenu - Only show when expanded */}
                 {item.id === 'create' && createExpanded && (
                   <div className="ml-3 mt-2" style={{ gap: '4px', display: 'flex', flexDirection: 'column' }}>
                     {createSubItems.map((subItem) => {
