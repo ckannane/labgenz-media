@@ -23,6 +23,11 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
     duration: '60s'
   });
 
+  // New state for enhanced workflows
+  const [selectedDemoStrategy, setSelectedDemoStrategy] = useState('');
+  const [selectedContentType, setSelectedContentType] = useState('');
+  const [viralElements, setViralElements] = useState<string[]>([]);
+
   const getVideoTypeTitle = (type: string) => {
     switch (type) {
       case 'ai-slideshow':
@@ -47,17 +52,23 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
         ];
       case 'ai-hook-demo':
         return [
-          { id: 'product-demo', name: 'Product Demo', description: 'Showcase your product features' },
-          { id: 'app-review', name: 'App Review', description: 'Review and demonstrate mobile apps' },
-          { id: 'tutorial', name: 'Quick Tutorial', description: 'Step-by-step tutorial content' },
-          { id: 'comparison', name: 'Before vs After', description: 'Show transformations or comparisons' }
+          { id: 'problem-solution', name: 'Problem → Solution', description: 'Start with pain point, reveal solution' },
+          { id: 'curiosity-gap', name: 'Curiosity Gap', description: 'Create intrigue, promise revelation' },
+          { id: 'controversy', name: 'Controversial Take', description: 'Bold statement that sparks debate' },
+          { id: 'social-proof', name: 'Social Proof', description: 'Use numbers and testimonials' },
+          { id: 'before-after', name: 'Before vs After', description: 'Dramatic transformation reveals' },
+          { id: 'secret-reveal', name: 'Secret Method', description: 'Reveal exclusive techniques or hacks' }
         ];
       case 'greenscreen-memes':
         return [
-          { id: 'reaction-meme', name: 'Reaction Meme', description: 'React to trending topics' },
-          { id: 'storytelling', name: 'Story Time', description: 'Tell engaging stories with visuals' },
-          { id: 'comedy-sketch', name: 'Comedy Sketch', description: 'Short funny skits and jokes' },
-          { id: 'trending-topic', name: 'Trending Topic', description: 'Jump on current trends' }
+          { id: 'pov-meme', name: 'POV Meme', description: 'Point of view relatable scenarios' },
+          { id: 'when-you', name: 'When You...', description: 'Relatable "when you" moments' },
+          { id: 'me-explaining', name: 'Me Explaining', description: 'Explaining complex topics dramatically' },
+          { id: 'conspiracy', name: 'Conspiracy Theory', description: 'Dramatic conspiracy explanations' },
+          { id: 'toxic-trait', name: 'Toxic Trait', description: 'Self-aware personality quirks' },
+          { id: 'life-hack', name: 'Life Hack Reveal', description: 'Mind-blowing life tips' },
+          { id: 'plot-twist', name: 'Plot Twist', description: 'Unexpected story reveals' },
+          { id: 'gen-z-humor', name: 'Gen Z Humor', description: 'Current generation-specific jokes' }
         ];
       default:
         return [
@@ -73,375 +84,29 @@ const CreateVideo: React.FC<CreateVideoProps> = ({ activeStep, onStepChange, vid
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     const scripts = {
-      'educational': `🎯 Today I'll show you the #1 mistake people make when learning a new skill...
-
-And how to avoid it in just 5 minutes!
-
-👋 Hey everyone! Have you ever started learning something new, felt excited for a week, and then just... stopped?
-
-🤔 Here's the truth: 95% of people fail because they try to learn everything at once.
-
-✅ Instead, do this:
-- Pick ONE specific sub-skill
-- Practice it for 15 minutes daily
-- Master it before moving on
-
-💡 For example: If you want to learn guitar, don't try to learn chords, scales, and songs simultaneously. Just focus on 3 basic chords first.
-
-🚀 This approach works because your brain can actually retain and build upon focused learning.
-
-Try this method for 30 days and watch your progress skyrocket! 📈
-
-Drop a 🔥 if you're ready to try this!`,
-
-      'motivational': `✨ "The only impossible journey is the one you never begin." - Tony Robbins
-
-🌅 Every morning, you have a choice:
-- Stay in your comfort zone
-- Or step into your growth zone
-
-💪 That dream you've been thinking about? 
-That goal you wrote down months ago?
-That skill you want to learn?
-
-⏰ TODAY is the day to start.
-
-🎯 Not tomorrow.
-Not next week.
-Not when you "feel ready."
-
-🔥 Champions aren't made in comfort zones. They're forged in the fire of consistent action.
-
-⚡ Your future self is counting on the decision you make RIGHT NOW.
-
-💫 Stop waiting for permission. Stop waiting for the "perfect moment."
-
-🚀 START TODAY. Take one small step. Then another. Then another.
-
-Your dreams are waiting! 🌟`,
-
-      'facts': `🤯 Mind-Blowing Facts That Will Change How You See the World!
-
-#1: Your brain uses 20% of your body's energy - that's why thinking hard makes you tired! 🧠
-
-#2: Honey never spoils. Archaeologists found 3000-year-old honey that's still edible! 🍯
-
-#3: A single cloud weighs about 1.1 million pounds - the same as 100 elephants! ☁️
-
-#4: Your stomach gets completely new lining every 3-4 days because stomach acid would digest it! 🔄
-
-#5: If you folded a piece of paper 42 times, it would reach the moon! 🌙
-
-#6: Bananas are berries, but strawberries aren't! 🍌🍓
-
-#7: The human brain has 86 billion neurons - more than there are stars in the Milky Way! ⭐
-
-#8: You share 50% of your DNA with bananas! 🧬
-
-Which fact surprised you the most? Drop it in the comments! 👇`,
-
-      'listicle': `🔥 Top 10 Life Hacks That Will Save You Hours Every Day!
-
-#10: Use the 2-minute rule - if it takes less than 2 minutes, do it now! ⏱️
-
-#9: Batch similar tasks together - answer all emails at once, not throughout the day 📧
-
-#8: Use voice messages instead of typing long texts - 3x faster! 🎤
-
-#7: Prep your clothes the night before - never waste morning time deciding what to wear 👔
-
-#6: Use the Pomodoro Technique - 25 minutes focused work, 5 minute break 🍅
-
-#5: Automate bill payments - never waste time or mental energy on due dates 💳
-
-#4: Use grocery pickup/delivery - saves 1+ hours per week 🛒
-
-#3: Learn keyboard shortcuts - can save 2+ hours daily for computer work ⌨️
-
-#2: Time-block your calendar - treat your time like scheduled meetings 📅
-
-#1: Say NO to non-essential requests - protect your time like it's your most valuable asset! 🚫
-
-Which one will you try first? Comment below! 👇`,
-
-      'product-demo': `🚀 This App Will Change How You [Do X] Forever!
-
-👋 Hey everyone! Today I'm testing out this game-changing app that promises to [solve specific problem].
-
-🎯 Here's what I'm looking for:
-- Does it actually work?
-- Is it worth the money?
-- Would I recommend it to you?
-
-⚡ First impressions: The interface is clean and intuitive. Setup took literally 30 seconds.
-
-🔥 The Features:
-✅ [Feature 1] - Works flawlessly
-✅ [Feature 2] - Exceeded expectations  
-✅ [Feature 3] - Game changer!
-
-💰 Pricing: $X/month (but there's a free version!)
-
-🤔 The Verdict:
-Pros: [List 2-3 pros]
-Cons: [List 1-2 cons]
-
-⭐ Overall Rating: 4.5/5 stars
-
-💡 Perfect for: [Target audience]
-❌ Skip if: [Who shouldn't use it]
-
-🔗 Link in bio if you want to try it!
-
-What questions do you have about this app? 👇`,
-
-      'app-review': `📱 I Used This Viral App for 30 Days - Here's My Honest Review
-
-🎯 The Promise: [App name] claims to [main benefit] in just [time frame]
-
-Day 1: Downloaded and set up - First impressions were [positive/negative]
-
-Week 1: Starting to see [specific results]. The [feature] is actually pretty cool!
-
-Week 2: [Specific example of progress/issues]. The [feature] needs work though.
-
-Week 3: Major breakthrough! [Specific achievement]. Finally understanding why people love this.
-
-Week 4: [Final results]. Here's everything I learned...
-
-✅ What Works:
-- [Specific feature and why]
-- [Specific feature and why]
-- [Specific feature and why]
-
-❌ What Doesn't:
-- [Specific issue and why]
-- [Specific issue and why]
-
-💰 Cost: $X/month (worth it? Keep watching...)
-
-🏆 Final Verdict: [Rating/10]
-
-💡 Best For: [Type of person]
-⚠️ Avoid If: [Type of person]
-
-Would you try this app? Let me know! 👇`,
-
-      'tutorial': `🎓 Master This Skill in 5 Minutes! (Complete Beginner Guide)
-
-🎯 What You'll Learn:
-- [Skill] basics
-- Common mistakes to avoid
-- Pro tips that took me years to learn
-
-⚡ Why This Matters:
-[Brief explanation of benefits]
-
-🔥 Let's Start:
-
-Step 1: [First step with clear instruction]
-💡 Pro Tip: [Helpful tip]
-
-Step 2: [Second step with clear instruction]
-⚠️ Common Mistake: [What to avoid]
-
-Step 3: [Third step with clear instruction]
-🚀 Advanced Tip: [Next level advice]
-
-Step 4: [Fourth step with clear instruction]
-✅ Success Check: [How to know you did it right]
-
-🎯 Practice Challenge:
-Try [specific exercise] for the next 7 days
-
-💪 Results You'll See:
-- [Specific benefit 1]
-- [Specific benefit 2]
-- [Specific benefit 3]
-
-🔄 Next Steps: [What to learn next]
-
-Drop a 💯 if this helped you!`,
-
-      'comparison': `⚡ Before vs After: The Transformation That Changed Everything!
-
-🎯 The Challenge: [Specific problem/situation]
-
-❌ BEFORE:
-- [Specific problem 1]
-- [Specific problem 2]  
-- [Specific problem 3]
-- [Emotional state/frustration]
-
-💡 The Solution: [What changed]
-
-✅ AFTER:
-- [Specific improvement 1]
-- [Specific improvement 2]
-- [Specific improvement 3]
-- [New emotional state/confidence]
-
-⏰ Timeline: This transformation took [time period]
-
-🔥 The Key Changes:
-1. [Most important change and why]
-2. [Second most important change and why]
-3. [Third most important change and why]
-
-💰 Investment: [Time/money cost]
-🏆 Results: [Specific measurable outcomes]
-
-🚀 The #1 Thing That Made the Difference:
-[Most crucial factor]
-
-💡 Your Turn:
-If you're dealing with [similar problem], try [specific advice]
-
-📈 Track your progress and share your results!
-
-What's your biggest challenge right now? 👇`,
-
-      'reaction-meme': `😂 When [Relatable Situation] Happens...
-
-🎭 Me: *Confidently starts [activity]*
-
-🧠 My Brain: "You got this!"
-
-⚡ Reality: [Humorous unexpected outcome]
-
-😅 Also Me: "Why do I keep doing this to myself?"
-
-🤔 Every Single Time:
-- Step 1: Feel confident
-- Step 2: Start the thing
-- Step 3: Immediate regret
-- Step 4: Somehow succeed anyway
-- Step 5: Forget the struggle and repeat
-
-💭 The Internal Dialogue:
-"I'm never doing this again"
-*5 minutes later*
-"Actually, maybe just one more time..."
-
-🎯 The Cycle:
-Confidence → Action → Panic → Success → Amnesia → Repeat
-
-😂 Who else lives this chaotic life?
-
-Tag someone who needs to see this! 👇`,
-
-      'storytelling': `📚 The Day Everything Changed - A True Story
-
-🌅 It started like any ordinary Tuesday...
-
-☕ I was drinking my morning coffee when I got a text that would change everything.
-
-📱 "Check your email. NOW."
-
-🤔 My heart sank. Was it good news? Bad news? I honestly couldn't tell.
-
-💻 I opened my laptop with shaking hands...
-
-📧 The subject line: "Your Application Status"
-
-⏰ For 3 months, I'd been waiting for this moment.
-
-🎯 The email said: [Reveal the news]
-
-😱 I literally screamed! My neighbor probably thought I was being murdered.
-
-🔥 But here's the crazy part...
-
-💡 This wasn't just luck. I'd been preparing for this moment for [time period].
-
-⚡ The secret? [Key lesson learned]
-
-🚀 The lesson: [Broader life lesson]
-
-💪 Today, [current status/achievement]
-
-🎯 The Point: [Motivational message]
-
-✨ Sometimes the best things happen when you least expect them.
-
-What's a moment that changed your life? Share below! 👇`,
-
-      'comedy-sketch': `🎭 When You Try to Be Healthy for Exactly One Day...
-
-🌅 Day 1 - 6 AM:
-"I'm going to drink water, eat salad, and exercise!"
-
-☕ Day 1 - 6:05 AM:
-"But first, coffee. Coffee is basically water."
-
-🥗 Day 1 - 12 PM:
-"This salad is great! I feel amazing!"
-
-🍕 Day 1 - 12:30 PM:
-"Well, one slice of pizza won't hurt..."
-
-🏃 Day 1 - 6 PM:
-"Time for my evening run!"
-
-🛋️ Day 1 - 6:01 PM:
-"Actually, the couch looks really comfortable."
-
-🌙 Day 1 - 10 PM:
-"I'll start fresh tomorrow. Today was just practice."
-
-📱 Day 2 - 6 AM:
-*Orders DoorDash*
-
-🤷 Day 2 - 6:05 AM:
-"Health is a journey, not a destination."
-
-💭 Day 2 - 12 PM:
-"I'll be healthy next Monday. Monday is perfect for starting things."
-
-😂 Who else has lived this exact experience?
-
-Tag your partner in (failed) healthy living! 👇`,
-
-      'trending-topic': `🔥 Everyone's Talking About [Current Trend] - Here's My Take
-
-📱 So apparently [trending topic] is everywhere right now...
-
-🤔 At first I thought: "This is just another internet thing"
-
-👀 But then I actually looked into it and...
-
-💡 Here's what's actually happening:
-[Explanation of the trend]
-
-🎯 Why It Matters:
-[Significance or impact]
-
-📈 The Numbers:
-- [Relevant statistic 1]
-- [Relevant statistic 2]
-- [Relevant statistic 3]
-
-🔥 My Honest Opinion:
-[Your take on the trend]
-
-✅ What I Like:
-- [Positive aspect 1]
-- [Positive aspect 2]
-
-❌ What Concerns Me:
-- [Concern 1]
-- [Concern 2]
-
-🚀 Where This Goes Next:
-[Prediction about future]
-
-💭 The Real Question:
-[Thought-provoking question]
-
-🎯 My Advice:
-[Practical guidance]
-
-What's your take on this trend? 👇`
+      // AI Slideshow scripts
+      'educational': `🎯 Today I'll show you the #1 mistake people make when learning a new skill...`,
+      'motivational': `✨ "The only impossible journey is the one you never begin." - Tony Robbins`,
+      'facts': `🤯 Mind-Blowing Facts That Will Change How You See the World!`,
+      'listicle': `🔥 Top 10 Life Hacks That Will Save You Hours Every Day!`,
+      
+      // AI Hook + Demo scripts (viral-focused)
+      'problem-solution': `🚨 STOP! If you're struggling with [problem], this will change everything in the next 60 seconds...`,
+      'before-after': `😱 I was broke 6 months ago. This ONE thing changed my life. Here's the proof...`,
+      'secret-reveal': `🤫 Billionaires don't want you to know this secret. Here's what they do differently...`,
+      'challenge-accepted': `💪 I challenged myself to [do X] for 30 days. The results will shock you...`,
+      'viral-trend': `🔥 Everyone's doing [trend] wrong. Here's the RIGHT way that actually works...`,
+      'controversy': `🚫 Unpopular opinion: [controversial statement]. Let me prove why I'm right...`,
+      
+      // Greenscreen Meme scripts (Gen Z/trending focused)
+      'pov-meme': `POV: You're trying to explain to your parents why you need the new iPhone...`,
+      'when-you': `When you accidentally open your front camera but you're actually looking good today...`,
+      'me-explaining': `Me explaining to my bank account why I NEED this $200 skincare routine...`,
+      'conspiracy': `Conspiracy theory: Companies make chargers break on purpose and here's why...`,
+      'toxic-trait': `My toxic trait is thinking I can wake up at 5am after going to bed at 2am...`,
+      'life-hack': `This life hack will save you $1000+ per year and nobody talks about it...`,
+      'plot-twist': `Plot twist: The quiet kid in class was actually the main character all along...`,
+      'gen-z-humor': `The way I gaslight myself into thinking I'll be productive tomorrow...`
     };
 
     const generatedScript = scripts[template as keyof typeof scripts] || 'Generated script content would appear here...';
@@ -450,7 +115,8 @@ What's your take on this trend? 👇`
   };
 
   const handleNext = () => {
-    if (activeStep < 4) {
+    const maxSteps = videoType === 'greenscreen-memes' ? 3 : 4;
+    if (activeStep < maxSteps) {
       onStepChange(activeStep + 1);
     }
   };
@@ -461,12 +127,40 @@ What's your take on this trend? 👇`
     }
   };
 
-  const steps = [
-    { number: 1, name: 'Script', icon: '📝' },
-    { number: 2, name: 'Voice', icon: '🎙️' },
-    { number: 3, name: 'Background', icon: '🎨' },
-    { number: 4, name: 'Finalize', icon: '✨' }
-  ];
+  const toggleViralElement = (element: string) => {
+    setViralElements(prev => 
+      prev.includes(element) 
+        ? prev.filter(e => e !== element)
+        : [...prev, element]
+    );
+  };
+
+  // Get steps based on video type
+  const getSteps = () => {
+    if (videoType === 'greenscreen-memes') {
+      return [
+        { number: 1, name: 'Meme Template', icon: '😂' },
+        { number: 2, name: 'Effects & Text', icon: '✨' },
+        { number: 3, name: 'Finalize', icon: '🔥' }
+      ];
+    } else if (videoType === 'ai-hook-demo') {
+      return [
+        { number: 1, name: 'Hook Script', icon: '🎯' },
+        { number: 2, name: 'Demo Content', icon: '🎬' },
+        { number: 3, name: 'Voice & Audio', icon: '🎙️' },
+        { number: 4, name: 'Finalize', icon: '✨' }
+      ];
+    } else {
+      return [
+        { number: 1, name: 'Script', icon: '📝' },
+        { number: 2, name: 'Voice', icon: '🎙️' },
+        { number: 3, name: 'Background', icon: '🎨' },
+        { number: 4, name: 'Finalize', icon: '✨' }
+      ];
+    }
+  };
+  
+  const steps = getSteps();
 
   const voices = [
     { id: 'david', name: 'David', accent: 'US English', gender: 'Male', description: 'Professional, clear' },
@@ -497,75 +191,259 @@ What's your take on this trend? 👇`
     { id: 'corporate', name: 'Corporate Inspiration', mood: 'Professional', duration: '2:45' },
     { id: 'chill', name: 'Chill Electronic', mood: 'Relaxed', duration: '4:12' },
     { id: 'dramatic', name: 'Dramatic Orchestral', mood: 'Intense', duration: '3:58' },
-    { id: 'ambient', name: 'Ambient Soundscape', mood: 'Calm', duration: '5:33' }
   ];
 
   return (
-    <div className="min-h-screen bg-black p-2">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <p className="section-subtitle">CREATIVE MIND, CREATIVE WORKS</p>
-          <h1 className="section-title">
-            {getVideoTypeTitle(videoType)}
-          </h1>
-          <p className="text-gray-400">
-            Follow the steps below to create your video
-          </p>
-        </div>
+    <div className="max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">{getVideoTypeTitle(videoType)}</h1>
+        <p className="text-gray-400">Create engaging content with our AI-powered tools</p>
+      </div>
 
-        {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between max-w-2xl mx-auto">
-            {steps.map((step, index) => (
-              <div key={step.number} className="flex items-center">
-                <div className={`
-                  step-indicator
-                  ${activeStep >= step.number ? 'active' : ''}
-                  ${activeStep > step.number ? 'completed' : ''}
-                `}>
-                  {step.icon}
-                </div>
-                <div className="ml-3">
-                  <div className={`font-semibold ${activeStep >= step.number ? 'text-white' : 'text-gray-400'}`}>
-                    {step.name}
-                  </div>
-                  <div className="text-sm text-gray-500">Step {step.number}</div>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className={`w-16 h-0.5 mx-4 ${activeStep > step.number ? 'bg-cyan-400' : 'bg-gray-700'}`} />
-                )}
+      {/* Stepper */}
+      <div className="glass-card p-6 mb-8">
+        <div className="flex justify-between items-center mb-6">
+          {steps.map((step, index) => (
+            <div key={step.number} className="flex items-center">
+              <div className={`
+                w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300
+                ${activeStep === step.number 
+                  ? 'bg-gradient-to-r from-cyan-400 to-purple-400 text-gray-900 shadow-lg shadow-cyan-400/30' 
+                  : activeStep > step.number 
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-700 text-gray-400'
+                }
+              `}>
+                {activeStep > step.number ? <Check className="w-5 h-5" /> : step.icon}
               </div>
-            ))}
-          </div>
+              
+              <div className="ml-3 hidden md:block">
+                <p className={`text-sm font-medium ${activeStep === step.number ? 'text-cyan-400' : 'text-white'}`}>
+                  {step.name}
+                </p>
+                <p className="text-xs text-gray-500">Step {step.number}</p>
+              </div>
+              
+              {index < steps.length - 1 && (
+                <div className={`
+                  w-16 h-1 mx-4 rounded transition-all duration-300
+                  ${activeStep > step.number ? 'bg-green-500' : 'bg-gray-700'}
+                `} />
+              )}
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* Content Area */}
-        <div className="glass-card p-8 mb-8">{/* ${activeStep >= step.number ? 'bg-gradient-to-r from-green-400 to-cyan-400 text-gray-900' : 'bg-gray-700 text-gray-400'} */}
-          {/* Step 1: Script */}
+      {/* Step Content */}
+      <div className="glass-card p-8 mb-8">
+        <div className="min-h-[500px]">
+          {/* Step 1: Script, Template, or Hook Strategy */}
           {activeStep === 1 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Create Your Script</h2>
-                <p className="text-gray-400">Choose a template or write your own script</p>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {videoType === 'greenscreen-memes' ? 'Choose Your Approach' : 
+                   videoType === 'ai-hook-demo' ? 'Hook Creation Strategy' : 'Create Your Script'}
+                </h2>
+                <p className="text-gray-400">
+                  {videoType === 'greenscreen-memes' 
+                    ? 'Use our viral templates or upload your own video'
+                    : videoType === 'ai-hook-demo'
+                    ? 'Get all the elements you need for a viral hook'
+                    : 'Choose a template or write your own script'}
+                </p>
               </div>
 
-              {/* Template Selection */}
-              <div className="services-grid">
-                {getTemplates(videoType).map((template) => (
-                  <div
-                    key={template.id}
-                    onClick={() => setSelectedTemplate(template.id)}
-                    className={`
-                      service-card cursor-pointer
-                      ${selectedTemplate === template.id ? 'highlighted' : ''}
-                    `}
-                  >
-                    <h3 className="text-white font-semibold mb-1">{template.name}</h3>
-                    <p className="text-gray-400 text-sm">{template.description}</p>
+              {videoType === 'greenscreen-memes' ? (
+                // Greenscreen Memes: Template vs Custom Video Choice
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Template Option */}
+                    <div className="glass-card p-6 border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
+                      <div className="text-center mb-4">
+                        <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <span className="text-2xl">🎭</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Use Viral Templates</h3>
+                        <p className="text-gray-300 text-sm">Choose from trending meme formats with proven viral potential</p>
+                      </div>
+                      <button 
+                        onClick={() => setSelectedContentType('template')}
+                        className={`w-full btn-secondary ${selectedContentType === 'template' ? 'highlighted' : ''}`}
+                      >
+                        Browse Templates
+                      </button>
+                    </div>
+
+                    {/* Custom Video Option */}
+                    <div className="glass-card p-6 border-2 border-green-500/30 bg-gradient-to-br from-green-500/10 to-cyan-500/10">
+                      <div className="text-center mb-4">
+                        <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <span className="text-2xl">🎥</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Upload Your Video</h3>
+                        <p className="text-gray-300 text-sm">Use your own footage and add greenscreen effects</p>
+                      </div>
+                      <button 
+                        onClick={() => setSelectedContentType('custom')}
+                        className={`w-full btn-secondary ${selectedContentType === 'custom' ? 'highlighted' : ''}`}
+                      >
+                        Upload Video
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
+
+                  {/* Template Selection (if template option chosen) */}
+                  {selectedContentType === 'template' && (
+                    <>
+                      <h3 className="text-white font-semibold mb-4">🔥 Viral Meme Templates</h3>
+                      <div className="services-grid">
+                        {getTemplates(videoType).map((template) => (
+                          <div
+                            key={template.id}
+                            onClick={() => setSelectedTemplate(template.id)}
+                            className={`
+                              service-card cursor-pointer
+                              ${selectedTemplate === template.id ? 'highlighted' : ''}
+                            `}
+                          >
+                            <h3 className="text-white font-semibold mb-1">{template.name}</h3>
+                            <p className="text-gray-400 text-sm">{template.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Custom Video Upload (if custom option chosen) */}
+                  {selectedContentType === 'custom' && (
+                    <div className="space-y-6">
+                      <h3 className="text-white font-semibold mb-4">📹 Upload Your Video</h3>
+                      <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors">
+                        <div className="text-4xl mb-3">🎬</div>
+                        <p className="text-white mb-2 font-medium">Drag & drop your video here</p>
+                        <p className="text-gray-400 text-sm mb-4">We'll automatically detect the background for greenscreen effects</p>
+                        <button className="bg-gradient-to-r from-green-400 to-cyan-400 text-gray-900 px-6 py-2 rounded-lg font-medium hover:from-green-500 hover:to-cyan-500 transition-all duration-300">
+                          Browse Files
+                        </button>
+                        <p className="text-gray-500 text-sm mt-4">Supports MP4, MOV, AVI (max 500MB)</p>
+                      </div>
+                      
+                      <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
+                        <h4 className="text-green-400 font-medium mb-2">💡 Pro Tips for Best Results:</h4>
+                        <ul className="text-gray-300 text-sm space-y-1">
+                          <li>• Use a solid colored background (green/blue works best)</li>
+                          <li>• Ensure good lighting and minimal shadows</li>
+                          <li>• Keep yourself centered in the frame</li>
+                          <li>• Record in landscape mode for better compatibility</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : videoType === 'ai-hook-demo' ? (
+                // AI Hook + Demo: Complete Hook Elements
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    {/* Hook Strategy */}
+                    <div className="glass-card p-6 text-center">
+                      <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <span className="text-red-400 text-xl">🎯</span>
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Hook Strategy</h3>
+                      <p className="text-gray-400 text-sm">Proven frameworks that grab attention</p>
+                    </div>
+
+                    {/* Script Templates */}
+                    <div className="glass-card p-6 text-center">
+                      <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <span className="text-purple-400 text-xl">📝</span>
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Script Templates</h3>
+                      <p className="text-gray-400 text-sm">High-converting script structures</p>
+                    </div>
+
+                    {/* Visual Elements */}
+                    <div className="glass-card p-6 text-center">
+                      <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <span className="text-cyan-400 text-xl">🎨</span>
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Visual Elements</h3>
+                      <p className="text-gray-400 text-sm">Graphics, transitions, and effects</p>
+                    </div>
+                  </div>
+
+                  {/* Hook Strategy Selection */}
+                  <div className="mb-8">
+                    <h3 className="text-white font-semibold mb-4">🎯 Choose Your Hook Strategy</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {getTemplates(videoType).map((strategy) => (
+                        <div
+                          key={strategy.id}
+                          onClick={() => setSelectedTemplate(strategy.id)}
+                          className={`
+                            service-card cursor-pointer
+                            ${selectedTemplate === strategy.id ? 'highlighted' : ''}
+                          `}
+                        >
+                          <h4 className="text-white font-semibold mb-2">{strategy.name}</h4>
+                          <p className="text-gray-400 text-sm mb-3">{strategy.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Complete Hook Elements Kit */}
+                  {selectedTemplate && (
+                    <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 rounded-lg p-6 border border-purple-500/20">
+                      <h3 className="text-white font-semibold mb-4">🚀 Your Complete Hook Kit</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="text-2xl mb-2">📋</div>
+                          <h4 className="text-white font-medium text-sm">Script Framework</h4>
+                          <p className="text-gray-400 text-xs">Ready-to-use templates</p>
+                        </div>
+                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="text-2xl mb-2">🎬</div>
+                          <h4 className="text-white font-medium text-sm">Visual Templates</h4>
+                          <p className="text-gray-400 text-xs">Eye-catching graphics</p>
+                        </div>
+                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="text-2xl mb-2">🎵</div>
+                          <h4 className="text-white font-medium text-sm">Hook Music</h4>
+                          <p className="text-gray-400 text-xs">Attention-grabbing audio</p>
+                        </div>
+                        <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                          <div className="text-2xl mb-2">📊</div>
+                          <h4 className="text-white font-medium text-sm">Analytics Setup</h4>
+                          <p className="text-gray-400 text-xs">Performance tracking</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Regular AI Slideshow Template Selection
+                <>
+                  <div className="services-grid">
+                    {getTemplates(videoType).map((template) => (
+                      <div
+                        key={template.id}
+                        onClick={() => setSelectedTemplate(template.id)}
+                        className={`
+                          service-card cursor-pointer
+                          ${selectedTemplate === template.id ? 'highlighted' : ''}
+                        `}
+                      >
+                        <h3 className="text-white font-semibold mb-1">{template.name}</h3>
+                        <p className="text-gray-400 text-sm">{template.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
 
               {/* Generate Script Button */}
               {selectedTemplate && (
@@ -598,39 +476,160 @@ What's your take on this trend? 👇`
             </div>
           )}
 
-          {/* Step 2: Voice */}
+          {/* Step 2: Voice, Demo Content, or Effects & Text */}
           {activeStep === 2 && (
             <div className="space-y-6">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Choose Your Voice</h2>
-                <p className="text-gray-400">Select a voice that matches your content style</p>
-              </div>
-
-              {/* Voice Selection */}
-              <div className="services-grid">
-                {voices.map((voice) => (
-                  <div
-                    key={voice.id}
-                    onClick={() => setSelectedVoice(voice.id)}
-                    className={`
-                      service-card cursor-pointer
-                      ${selectedVoice === voice.id ? 'highlighted' : ''}
-                    `}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-semibold">{voice.name}</h3>
-                      <button className="text-cyan-400 hover:text-cyan-300">
-                        <Play className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <p className="text-gray-400 text-sm mb-1">{voice.accent} • {voice.gender}</p>
-                    <p className="text-gray-500 text-sm">{voice.description}</p>
+              {videoType === 'greenscreen-memes' ? (
+                // Effects & Text content for greenscreen memes
+                <>
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Effects & Text</h2>
+                    <p className="text-gray-400">Add visual effects, text overlays, and trending elements</p>
                   </div>
-                ))}
-              </div>
+
+                  {/* Trending Background Effects */}
+                  <div className="mb-8">
+                    <h3 className="text-white font-semibold mb-4">🔥 Trending Backgrounds</h3>
+                    <div className="services-grid">
+                      <div className="service-card cursor-pointer highlighted">
+                        <h3 className="text-white font-semibold mb-1">🌌 Galaxy Vibe</h3>
+                        <p className="text-gray-400 text-sm">Cosmic space aesthetic • Viral on TikTok</p>
+                      </div>
+                      <div className="service-card cursor-pointer">
+                        <h3 className="text-white font-semibold mb-1">🏢 Liminal Spaces</h3>
+                        <p className="text-gray-400 text-sm">Eerie empty places • Horror aesthetic</p>
+                      </div>
+                      <div className="service-card cursor-pointer">
+                        <h3 className="text-white font-semibold mb-1">🎮 PS2 Graphics</h3>
+                        <p className="text-gray-400 text-sm">Retro gaming nostalgia • Gen Z favorite</p>
+                      </div>
+                      <div className="service-card cursor-pointer">
+                        <h3 className="text-white font-semibold mb-1">🌊 Aesthetic Waves</h3>
+                        <p className="text-gray-400 text-sm">Vaporwave vibes • Chill content</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Text Overlays */}
+                  <div className="bg-gray-900/50 rounded-lg p-6 mb-6">
+                    <h3 className="text-white font-semibold mb-4">💬 Text & Captions</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-white font-medium mb-2">Hook Text (First 3 seconds)</label>
+                        <input
+                          type="text"
+                          placeholder="POV: When you realize..."
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:border-cyan-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-white font-medium mb-2">Main Message</label>
+                        <input
+                          type="text"
+                          placeholder="That awkward moment when..."
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:border-cyan-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-white font-medium mb-2">Call to Action</label>
+                        <input
+                          type="text"
+                          placeholder="Follow for more relatable content 💀"
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:border-cyan-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : videoType === 'ai-hook-demo' ? (
+                // Demo Content Builder for AI Hook + Demo
+                <>
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Demo Content Builder</h2>
+                    <p className="text-gray-400">Create compelling product demonstrations and social proof</p>
+                  </div>
+
+                  {/* Demo Type Selection */}
+                  <div className="mb-6">
+                    <h4 className="text-white font-medium mb-3">Select Demo Type</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {[
+                        { id: 'screen-demo', icon: '📱', title: 'Screen Demo', desc: 'App/software walkthrough' },
+                        { id: 'product-showcase', icon: '📦', title: 'Product Demo', desc: 'Physical product features' },
+                        { id: 'results-proof', icon: '📈', title: 'Results Demo', desc: 'Before/after comparisons' }
+                      ].map((demo) => (
+                        <button
+                          key={demo.id}
+                          onClick={() => setSelectedDemoStrategy(demo.id)}
+                          className={`p-4 rounded-xl border transition-all duration-300 flex flex-col items-center gap-2 ${
+                            selectedDemoStrategy === demo.id 
+                              ? 'bg-gradient-to-r from-purple-400/20 to-cyan-400/20 border-purple-400' 
+                              : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                          }`}
+                        >
+                          <div className="text-2xl">{demo.icon}</div>
+                          <span className="text-white font-medium">{demo.title}</span>
+                          <span className="text-gray-400 text-sm text-center">{demo.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Demo Upload */}
+                  <div className="bg-gray-900/50 rounded-lg p-6 mb-6">
+                    <h4 className="text-white font-medium mb-3">📁 Upload Your Demo Assets</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-gray-500 transition-colors">
+                        <div className="text-2xl mb-2">🎥</div>
+                        <p className="text-gray-300 text-sm mb-2">Demo Video/Screen Recording</p>
+                        <button className="bg-gradient-to-r from-purple-400 to-cyan-400 text-gray-900 px-4 py-1 rounded text-sm font-medium">
+                          Upload Video
+                        </button>
+                      </div>
+                      <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-gray-500 transition-colors">
+                        <div className="text-2xl mb-2">📊</div>
+                        <p className="text-gray-300 text-sm mb-2">Charts/Results/Screenshots</p>
+                        <button className="bg-gradient-to-r from-purple-400 to-cyan-400 text-gray-900 px-4 py-1 rounded text-sm font-medium">
+                          Upload Images
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                // Regular Voice Selection for AI Slideshow
+                <>
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Choose Your Voice</h2>
+                    <p className="text-gray-400">Select a voice that matches your content style</p>
+                  </div>
+
+                  <div className="services-grid">
+                    {voices.map((voice) => (
+                      <div
+                        key={voice.id}
+                        onClick={() => setSelectedVoice(voice.id)}
+                        className={`
+                          service-card cursor-pointer
+                          ${selectedVoice === voice.id ? 'highlighted' : ''}
+                        `}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-white font-semibold">{voice.name}</h3>
+                          <button className="text-cyan-400 hover:text-cyan-300">
+                            <Play className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <p className="text-gray-400 text-sm mb-1">{voice.accent} • {voice.gender}</p>
+                        <p className="text-gray-500 text-sm">{voice.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
 
               {/* Voice Settings */}
-              {selectedVoice && (
+              {selectedVoice && videoType !== 'ai-hook-demo' && (
                 <div className="glass-card p-6 space-y-4">
                   <h3 className="text-white font-semibold mb-4">Voice Settings</h3>
                   
@@ -670,196 +669,310 @@ What's your take on this trend? 👇`
             </div>
           )}
 
-          {/* Step 3: Background */}
+          {/* Step 3: Background or Voice & Audio for AI Hook + Demo */}
           {activeStep === 3 && (
             <div className="space-y-6">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Choose Background & Music</h2>
-                <p className="text-gray-400">Select visuals and audio to enhance your video</p>
-              </div>
-
-              {/* Background Type Selection */}
-              <div className="mb-6">
-                <h3 className="text-white font-semibold mb-4">Background Type</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {backgroundTypes.map((type) => (
-                    <button
-                      key={type.id}
-                      onClick={() => setSelectedBackground(type.id)}
-                      className={`
-                        p-4 rounded-xl border transition-all duration-300 flex items-center gap-3
-                        ${selectedBackground === type.id 
-                          ? 'bg-gradient-to-r from-green-400/20 to-cyan-400/20 border-green-400' 
-                          : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'}
-                      `}
-                    >
-                      <type.icon className="w-5 h-5 text-green-400" />
-                      <span className="text-white font-medium">{type.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Background Library */}
-              {selectedBackground && (
-                <div className="mb-6">
-                  <h3 className="text-white font-semibold mb-4">Background Library</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {backgroundLibrary.map((bg) => (
-                      <div
-                        key={bg.id}
-                        className="relative bg-gray-700 rounded-xl p-4 cursor-pointer hover:bg-gray-600 transition-colors group"
-                      >
-                        <div className="text-4xl mb-2">{bg.thumbnail}</div>
-                        <h4 className="text-white font-medium">{bg.name}</h4>
-                        <p className="text-gray-400 text-sm capitalize">{bg.type}</p>
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Play className="w-5 h-5 text-green-400" />
-                        </div>
-                      </div>
-                    ))}
+              {videoType === 'greenscreen-memes' ? (
+                // Finalize for greenscreen memes
+                <>
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Finalize Your Meme</h2>
+                    <p className="text-gray-400">Review and export your viral content</p>
                   </div>
-                </div>
-              )}
 
-              {/* Music Selection */}
-              <div>
-                <h3 className="text-white font-semibold mb-4">Background Music</h3>
-                <div className="space-y-2">
-                  {musicTracks.map((track) => (
-                    <div
-                      key={track.id}
-                      onClick={() => setSelectedMusic(track.id)}
-                      className={`
-                        p-3 rounded-lg border cursor-pointer transition-all duration-300 flex items-center justify-between
-                        ${selectedMusic === track.id 
-                          ? 'bg-gradient-to-r from-green-400/20 to-cyan-400/20 border-green-400' 
-                          : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'}
-                      `}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Music className="w-5 h-5 text-green-400" />
-                        <div>
-                          <h4 className="text-white font-medium">{track.name}</h4>
-                          <p className="text-gray-400 text-sm">{track.mood} • {track.duration}</p>
-                        </div>
-                      </div>
-                      <button className="text-green-400 hover:text-green-300">
-                        <Play className="w-4 h-4" />
+                  <div className="bg-gray-900/50 rounded-lg p-6 text-center">
+                    <div className="text-4xl mb-4">🎬</div>
+                    <h3 className="text-white font-semibold mb-2">Video Preview</h3>
+                    <p className="text-gray-400 mb-4">Your meme is ready for the world!</p>
+                    
+                    <div className="flex gap-4 justify-center">
+                      <button className="bg-gradient-to-r from-green-400 to-cyan-400 text-gray-900 px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-cyan-500 transition-all duration-300 flex items-center gap-2">
+                        <Download className="w-5 h-5" />
+                        Export Video
+                      </button>
+                      <button className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2">
+                        <Share2 className="w-5 h-5" />
+                        Share
                       </button>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                </>
+              ) : videoType === 'ai-hook-demo' ? (
+                // Voice & Audio for AI Hook + Demo
+                <>
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Voice & Audio</h2>
+                    <p className="text-gray-400">Perfect your hook's audio for maximum impact</p>
+                  </div>
+
+                  {/* Voice Selection */}
+                  <div className="mb-8">
+                    <h3 className="text-white font-semibold mb-4">🎙️ Choose Your Voice</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {voices.slice(0, 4).map((voice) => (
+                        <div
+                          key={voice.id}
+                          onClick={() => setSelectedVoice(voice.id)}
+                          className={`
+                            p-4 rounded-xl border transition-all duration-300 cursor-pointer
+                            ${selectedVoice === voice.id 
+                              ? 'bg-gradient-to-r from-purple-400/20 to-cyan-400/20 border-purple-400' 
+                              : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                            }
+                          `}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="text-white font-medium">{voice.name}</h4>
+                              <p className="text-gray-400 text-sm">{voice.accent} • {voice.description}</p>
+                            </div>
+                            <button className="text-cyan-400 hover:text-cyan-300">
+                              <Play className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hook-Specific Music */}
+                  <div className="mb-8">
+                    <h3 className="text-white font-semibold mb-4">🎵 Hook Music Selection</h3>
+                    <div className="space-y-4">
+                      <div
+                        onClick={() => setSelectedMusic('urgency-builder')}
+                        className={`
+                          p-4 rounded-lg border transition-all duration-300 cursor-pointer flex items-center justify-between
+                          ${selectedMusic === 'urgency-builder' 
+                            ? 'bg-gradient-to-r from-red-400/20 to-orange-400/20 border-red-400' 
+                            : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                          }
+                        `}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+                            <Music className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-white font-medium">Urgency Builder</h4>
+                            <p className="text-gray-400 text-sm">Creates tension • Perfect for problem hooks</p>
+                          </div>
+                        </div>
+                        <button className="text-green-400 hover:text-green-300">
+                          <Play className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div
+                        onClick={() => setSelectedMusic('success-energy')}
+                        className={`
+                          p-4 rounded-lg border transition-all duration-300 cursor-pointer flex items-center justify-between
+                          ${selectedMusic === 'success-energy' 
+                            ? 'bg-gradient-to-r from-green-400/20 to-cyan-400/20 border-green-400' 
+                            : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                          }
+                        `}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                            <Music className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-white font-medium">Success Energy</h4>
+                            <p className="text-gray-400 text-sm">Uplifting vibes • Great for solution reveals</p>
+                          </div>
+                        </div>
+                        <button className="text-green-400 hover:text-green-300">
+                          <Play className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div
+                        onClick={() => setSelectedMusic('trust-building')}
+                        className={`
+                          p-4 rounded-lg border transition-all duration-300 cursor-pointer flex items-center justify-between
+                          ${selectedMusic === 'trust-building' 
+                            ? 'bg-gradient-to-r from-blue-400/20 to-purple-400/20 border-blue-400' 
+                            : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                          }
+                        `}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <Music className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-white font-medium">Trust Building</h4>
+                            <p className="text-gray-400 text-sm">Professional tone • Perfect for authority</p>
+                          </div>
+                        </div>
+                        <button className="text-green-400 hover:text-green-300">
+                          <Play className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Voice Settings */}
+                  {selectedVoice && (
+                    <div className="bg-gray-900/50 rounded-lg p-6">
+                      <h3 className="text-white font-semibold mb-4">🎛️ Audio Settings</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-white font-medium mb-2">
+                            Speed: {voiceSpeed}x
+                          </label>
+                          <input
+                            type="range"
+                            min="0.5"
+                            max="2"
+                            step="0.1"
+                            value={voiceSpeed}
+                            onChange={(e) => setVoiceSpeed(parseFloat(e.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Background Selection for AI Slideshow
+                <>
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Choose Background</h2>
+                    <p className="text-gray-400">Select visuals that complement your content</p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-white font-semibold mb-4">Background Type</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {backgroundTypes.map((type) => (
+                          <button
+                            key={type.id}
+                            onClick={() => setSelectedBackground(type.id)}
+                            className={`
+                              p-4 rounded-xl border transition-all duration-300 flex flex-col items-center gap-2
+                              ${selectedBackground === type.id 
+                                ? 'bg-gradient-to-r from-purple-400/20 to-cyan-400/20 border-purple-400' 
+                                : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                              }
+                            `}
+                          >
+                            <type.icon className="w-8 h-8 text-cyan-400" />
+                            <span className="text-white font-medium">{type.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {selectedBackground && (
+                      <div>
+                        <h3 className="text-white font-semibold mb-4">Choose Background</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {backgroundLibrary.map((bg) => (
+                            <div key={bg.id} className="service-card cursor-pointer text-center">
+                              <div className="text-4xl mb-2">{bg.thumbnail}</div>
+                              <h4 className="text-white font-medium text-sm">{bg.name}</h4>
+                              <span className="text-gray-400 text-xs">{bg.type}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
-          {/* Step 4: Finalize */}
+          {/* Step 4: Finalize (for AI Slideshow and AI Hook + Demo) */}
           {activeStep === 4 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-white mb-2">Finalize Your Video</h2>
-                <p className="text-gray-400">Review settings and export your video</p>
+                <p className="text-gray-400">Review settings and export your content</p>
               </div>
 
-              {/* Export Settings */}
-              <div className="bg-gray-700/30 rounded-xl p-6 mb-6">
-                <h3 className="text-white font-semibold mb-4">Export Settings</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-white font-medium mb-2">Format</label>
-                    <select
-                      value={exportSettings.format}
-                      onChange={(e) => setExportSettings({...exportSettings, format: e.target.value})}
-                      className="w-full bg-gray-600 text-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    >
-                      <option value="mp4">MP4</option>
-                      <option value="mov">MOV</option>
-                      <option value="avi">AVI</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-white font-medium mb-2">Quality</label>
-                    <select
-                      value={exportSettings.quality}
-                      onChange={(e) => setExportSettings({...exportSettings, quality: e.target.value})}
-                      className="w-full bg-gray-600 text-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    >
-                      <option value="720p">720p HD</option>
-                      <option value="1080p">1080p Full HD</option>
-                      <option value="4k">4K Ultra HD</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-white font-medium mb-2">Duration</label>
-                    <select
-                      value={exportSettings.duration}
-                      onChange={(e) => setExportSettings({...exportSettings, duration: e.target.value})}
-                      className="w-full bg-gray-600 text-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    >
-                      <option value="30s">30 seconds</option>
-                      <option value="60s">60 seconds</option>
-                      <option value="90s">90 seconds</option>
-                      <option value="120s">2 minutes</option>
-                    </select>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Export Settings */}
+                <div className="bg-gray-900/50 rounded-lg p-6">
+                  <h3 className="text-white font-semibold mb-4">Export Settings</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-white font-medium mb-2">Format</label>
+                      <select 
+                        value={exportSettings.format}
+                        onChange={(e) => setExportSettings({...exportSettings, format: e.target.value})}
+                        className="form-select w-full"
+                      >
+                        <option value="mp4">MP4 (Recommended)</option>
+                        <option value="mov">MOV</option>
+                        <option value="avi">AVI</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white font-medium mb-2">Quality</label>
+                      <select 
+                        value={exportSettings.quality}
+                        onChange={(e) => setExportSettings({...exportSettings, quality: e.target.value})}
+                        className="form-select w-full"
+                      >
+                        <option value="1080p">1080p (HD)</option>
+                        <option value="720p">720p</option>
+                        <option value="4k">4K (Ultra HD)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white font-medium mb-2">Duration</label>
+                      <select 
+                        value={exportSettings.duration}
+                        onChange={(e) => setExportSettings({...exportSettings, duration: e.target.value})}
+                        className="form-select w-full"
+                      >
+                        <option value="15s">15 seconds</option>
+                        <option value="30s">30 seconds</option>
+                        <option value="60s">60 seconds</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Video Summary */}
-              <div className="bg-gray-700/30 rounded-xl p-6 mb-6">
-                <h3 className="text-white font-semibold mb-4">Video Summary</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span className="text-white">Script: {scriptContent.length} characters</span>
+                {/* Video Preview */}
+                <div className="bg-gray-900/50 rounded-lg p-6 text-center">
+                  <h3 className="text-white font-semibold mb-4">Preview</h3>
+                  <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg mb-4 flex items-center justify-center border border-gray-700">
+                    <div className="text-6xl opacity-60">🎬</div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span className="text-white">Voice: {selectedVoice || 'Not selected'}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span className="text-white">Background: {selectedBackground || 'Not selected'}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span className="text-white">Music: {selectedMusic || 'Not selected'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Preview */}
-              <div className="bg-gray-700/30 rounded-xl p-6 mb-6">
-                <h3 className="text-white font-semibold mb-4">Preview</h3>
-                <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <Eye className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-400">Video preview will appear here</p>
-                    <button className="mt-4 bg-green-400 text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-green-500 transition-colors">
-                      Generate Preview
-                    </button>
-                  </div>
+                  <p className="text-gray-400 text-sm mb-4">Your video preview will appear here</p>
+                  <button className="btn-secondary flex items-center gap-2 mx-auto">
+                    <Eye className="w-4 h-4" />
+                    Preview Video
+                  </button>
                 </div>
               </div>
 
               {/* Export Actions */}
-              <div className="flex gap-4 justify-center">
-                <button className="bg-gradient-to-r from-green-400 to-cyan-400 text-gray-900 px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-cyan-500 transition-all duration-300 flex items-center gap-2">
-                  <Download className="w-5 h-5" />
-                  Export Video
-                </button>
-                <button className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2">
-                  <Share2 className="w-5 h-5" />
-                  Share
-                </button>
+              <div className="text-center">
+                <div className="flex gap-4 justify-center">
+                  <button className="bg-gradient-to-r from-green-400 to-cyan-400 text-gray-900 px-8 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-cyan-500 transition-all duration-300 flex items-center gap-2">
+                    <Download className="w-5 h-5" />
+                    Export Video
+                  </button>
+                  <button className="bg-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2">
+                    <Share2 className="w-5 h-5" />
+                    Share to Social Media
+                  </button>
+                </div>
               </div>
             </div>
           )}
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-700">
           <button
             onClick={handlePrevious}
             disabled={activeStep === 1}
@@ -875,10 +988,10 @@ What's your take on this trend? 👇`
           
           <button
             onClick={handleNext}
-            disabled={activeStep === 4}
+            disabled={activeStep === steps.length}
             className="btn-secondary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {activeStep === 4 ? 'Complete' : 'Next'}
+            {activeStep === steps.length ? 'Complete' : 'Next'}
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
